@@ -1,12 +1,13 @@
 from tkinter import *
-from tkinter import messagebox
+
+import requests
 import tkintermapview
 from bs4 import BeautifulSoup
-import requests
+
+from tkinter import messagebox
 import logging
 
-logging.basicConfig(filename='program.log', level=logging.INFO,
-                    format='%(asctime)s %(levelname)s: %(message)s')
+logging.basicConfig(filename='program.log', format='%(message)s')
 
 # Dane logowania
 uzytkownicy = {
@@ -51,12 +52,12 @@ pracownicy = []
 
 
 class user:
-    def __init__(self, nazwa, lokalizacja, lista_entitetow, widget_maps):
+    def __init__(self, nazwa, lokalizacja, lista_user, widget_maps):
         self.nazwa = nazwa
         self.lokalizacja = lokalizacja
         self.koordynaty = self.pobierz_koordynaty()
         self.marker = widget_maps.set_marker(self.koordynaty[0], self.koordynaty[1], text=self.nazwa)
-        lista_entitetow.append(self)
+        lista_user.append(self)
 
     def pobierz_koordynaty(self):
         url = f'https://pl.wikipedia.org/wiki/{self.lokalizacja}'
@@ -133,12 +134,12 @@ def dodaj_pracownika():
         entry_pracownik_firma.delete(0, END)
 
 
-def usun_entity(lista_entitetow, lista):
+def usun_user(lista_user, lista):
     selected_index = lista.curselection()[0]
-    entity = lista_entitetow[selected_index]
+    entity = lista_user[selected_index]
     entity.usun_marker()
-    lista_entitetow.pop(selected_index)
-    pokaz_user(lista_entitetow, lista)
+    lista_user.pop(selected_index)
+    pokaz_user(lista_user, lista)
 
 
 def pokaz_szczegoly_firmy():
@@ -246,19 +247,19 @@ listbox_firmy = Listbox(ramka_firmy, width=30, height=20)
 listbox_firmy.grid(row=1, column=0, sticky=N + S + E + W)
 Button(ramka_firmy, text="Pokaż Szczegóły", command=pokaz_szczegoly_firmy).grid(row=2, column=0)
 Button(ramka_firmy, text="Edytuj Firmę", command=edytuj_firme).grid(row=3, column=0)
-Button(ramka_firmy, text="Usuń Firmę", command=lambda: usun_entity(firmy, listbox_firmy)).grid(row=4, column=0)
+Button(ramka_firmy, text="Usuń Firmę", command=lambda: usun_user(firmy, listbox_firmy)).grid(row=4, column=0)
 
 Label(ramka_klienci, text="Klienci:").grid(row=0, column=0)
 listbox_klienci = Listbox(ramka_klienci, width=30, height=20)
 listbox_klienci.grid(row=1, column=0, sticky=N + S + E + W)
 Button(ramka_klienci, text="Edytuj Klienta", command=edytuj_klienta).grid(row=2, column=0)
-Button(ramka_klienci, text="Usuń Klienta", command=lambda: usun_entity(klienci, listbox_klienci)).grid(row=3, column=0)
+Button(ramka_klienci, text="Usuń Klienta", command=lambda: usun_user(klienci, listbox_klienci)).grid(row=3, column=0)
 
 Label(ramka_pracownicy, text="Pracownicy:").grid(row=0, column=0)
 listbox_pracownicy = Listbox(ramka_pracownicy, width=30, height=20)
 listbox_pracownicy.grid(row=1, column=0, sticky=N + S + E + W)
 Button(ramka_pracownicy, text="Edytuj Pracownika", command=edytuj_pracownika).grid(row=2, column=0)
-Button(ramka_pracownicy, text="Usuń Pracownika", command=lambda: usun_entity(pracownicy, listbox_pracownicy)).grid(
+Button(ramka_pracownicy, text="Usuń Pracownika", command=lambda: usun_user(pracownicy, listbox_pracownicy)).grid(
     row=3, column=0)
 
 # Formularz do dodawania user
